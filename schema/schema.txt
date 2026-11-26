@@ -1,0 +1,295 @@
+{
+  "schema": {
+    "Employees": {
+      "attributes": {
+        "EmployeeID": {"type": "INT", "nullable": false},
+        "Name": {"type": "VARCHAR(100)", "nullable": false},
+        "IsStaff": {"type": "BOOLEAN", "nullable": false}
+      },
+      "primary_key": ["EmployeeID"],
+      "foreign_keys": [],
+      "functional_dependencies": [
+        "EmployeeID -> EmployeeID, Name, IsStaff"
+      ]
+    },
+    "Managers": {
+      "attributes": {
+        "EmployeeID": {"type": "INT", "nullable": false}
+      },
+      "primary_key": ["EmployeeID"],
+      "foreign_keys": [
+        {"attributes": ["EmployeeID"], "references": {"table": "Employees", "attributes": ["EmployeeID"]}}
+      ],
+      "functional_dependencies": [
+        "EmployeeID -> EmployeeID"
+      ]
+    },
+    "Editors": {
+      "attributes": {
+        "EmployeeID": {"type": "INT", "nullable": false}
+      },
+      "primary_key": ["EmployeeID"],
+      "foreign_keys": [
+        {"attributes": ["EmployeeID"], "references": {"table": "Employees", "attributes": ["EmployeeID"]}}
+      ],
+      "functional_dependencies": [
+        "EmployeeID -> EmployeeID"
+      ]
+    },
+    "Authors": {
+      "attributes": {
+        "EmployeeID": {"type": "INT", "nullable": false}
+      },
+      "primary_key": ["EmployeeID"],
+      "foreign_keys": [
+        {"attributes": ["EmployeeID"], "references": {"table": "Employees", "attributes": ["EmployeeID"]}}
+      ],
+      "functional_dependencies": [
+        "EmployeeID -> EmployeeID"
+      ]
+    },
+    "Publications": {
+      "attributes": {
+        "PubID": {"type": "INT", "nullable": false},
+        "PubTitle": {"type": "VARCHAR(200)", "nullable": true, "null_meaning": "Title has not been confirmed yet"},
+        "PubType": {"type": "VARCHAR(50)", "nullable": false},
+        "Topic": {"type": "VARCHAR(100)", "nullable": true, "null_meaning": "Topic classification does not apply to this publication type"}
+      },
+      "primary_key": ["PubID"],
+      "foreign_keys": [],
+      "functional_dependencies": [
+        "PubID -> PubID, PubTitle, PubType, Topic"
+      ]
+    },
+    "Edits": {
+      "attributes": {
+        "EmployeeID": {"type": "INT", "nullable": false},
+        "PubID": {"type": "INT", "nullable": false}
+      },
+      "primary_key": ["EmployeeID", "PubID"],
+      "foreign_keys": [
+        {"attributes": ["EmployeeID"], "references": {"table": "Editors", "attributes": ["EmployeeID"]}},
+        {"attributes": ["PubID"], "references": {"table": "Publications", "attributes": ["PubID"]}}
+      ],
+      "functional_dependencies": [
+        "EmployeeID, PubID -> EmployeeID, PubID"
+      ]
+    },
+    "Books": {
+      "attributes": {
+        "PubID": {"type": "INT", "nullable": false}
+      },
+      "primary_key": ["PubID"],
+      "foreign_keys": [
+        {"attributes": ["PubID"], "references": {"table": "Publications", "attributes": ["PubID"]}}
+      ],
+      "functional_dependencies": [
+        "PubID -> PubID"
+      ]
+    },
+    "PeriodicalPubs": {
+      "attributes": {
+        "PubID": {"type": "INT", "nullable": false},
+        "Periodicity": {"type": "VARCHAR(50)", "nullable": false}
+      },
+      "primary_key": ["PubID"],
+      "foreign_keys": [
+        {"attributes": ["PubID"], "references": {"table": "Publications", "attributes": ["PubID"]}}
+      ],
+      "functional_dependencies": [
+        "PubID -> PubID, Periodicity"
+      ]
+    },
+    "Editions": {
+      "attributes": {
+        "ISBN": {"type": "VARCHAR(20)", "nullable": false},
+        "EditionNum": {"type": "INT", "nullable": false},
+        "WrittenDate": {"type": "DATE", "nullable": true, "null_meaning": "Writing process has not yet been completed"},
+        "PublishedDate": {"type": "DATE", "nullable": true, "null_meaning": "Edition has not yet been published"},
+        "PubID": {"type": "INT", "nullable": false}
+      },
+      "primary_key": ["ISBN"],
+      "foreign_keys": [
+        {"attributes": ["PubID"], "references": {"table": "Books", "attributes": ["PubID"]}}
+      ],
+      "functional_dependencies": [
+        "ISBN -> EditionNum, WrittenDate, PublishedDate, PubID"
+      ]
+    },
+    "Issues": {
+      "attributes": {
+        "IssueID": {"type": "INT", "nullable": false},
+        "IssueTitle": {"type": "VARCHAR(200)", "nullable": true, "null_meaning": "Issue title has not been confirmed yet"},
+        "ProducedDate": {"type": "DATE", "nullable": true, "null_meaning": "Issue has not yet been produced"},
+        "PublishedDate": {"type": "DATE", "nullable": true, "null_meaning": "Issue has not yet been released to the public"},
+        "PubID": {"type": "INT", "nullable": false}
+      },
+      "primary_key": ["IssueID"],
+      "foreign_keys": [
+        {"attributes": ["PubID"], "references": {"table": "PeriodicalPubs", "attributes": ["PubID"]}}
+      ],
+      "functional_dependencies": [
+        "IssueID -> IssueTitle, ProducedDate, PublishedDate, PubID"
+      ]
+    },
+    "PublicationUnits": {
+      "attributes": {
+        "PublicationUnitID": {"type": "INT", "nullable": false},
+        "PublicationUnitTitle": {"type": "VARCHAR(200)", "nullable": true, "null_meaning": "Title has not been confirmed yet"},
+        "PublicationUnitType": {"type": "VARCHAR(50)", "nullable": false},
+        "WrittenDate": {"type": "DATE", "nullable": true, "null_meaning": "Publication unit is still being written"},
+        "FullText": {"type": "TEXT", "nullable": true, "null_meaning": "Publication content is still in progress"},
+        "Topic": {"type": "VARCHAR(100)", "nullable": true, "null_meaning": "Topic classification does not apply"},
+        "EmployeeID": {"type": "INT", "nullable": false}
+      },
+      "primary_key": ["PublicationUnitID"],
+      "foreign_keys": [
+        {"attributes": ["EmployeeID"], "references": {"table": "Authors", "attributes": ["EmployeeID"]}}
+      ],
+      "functional_dependencies": [
+        "PublicationUnitID -> PublicationUnitTitle, PublicationUnitType, WrittenDate, FullText, Topic, EmployeeID",
+        "FullText -> PublicationUnitID, PublicationUnitTitle, PublicationUnitType, WrittenDate, Topic, EmployeeID"
+      ]
+    },
+      "Chapters": {
+      "attributes": {
+        "PublicationUnitID": {"type": "INT", "nullable": false}
+      },
+      "primary_key": ["PublicationUnitID"],
+      "foreign_keys": [
+        {"attributes": ["PublicationUnitID"], "references": {"table": "PublicationUnits", "attributes": ["PublicationUnitID"]}}
+      ],
+      "functional_dependencies": [
+        "PublicationUnitID -> PublicationUnitID"
+      ]
+    },
+    "Articles": {
+      "attributes": {
+        "PublicationUnitID": {"type": "INT", "nullable": false}
+      },
+      "primary_key": ["PublicationUnitID"],
+      "foreign_keys": [
+        {"attributes": ["PublicationUnitID"], "references": {"table": "PublicationUnits", "attributes": ["PublicationUnitID"]}}
+      ],
+      "functional_dependencies": [
+        "PublicationUnitID -> PublicationUnitID"
+      ]
+    },
+    "EditionChapter": {
+      "attributes": {
+        "PublicationUnitID": {"type": "INT", "nullable": false},
+        "ISBN": {"type": "VARCHAR(20)", "nullable": false}
+      },
+      "primary_key": ["PublicationUnitID", "ISBN"],
+      "foreign_keys": [
+        {"attributes": ["PublicationUnitID"], "references": {"table": "Chapters", "attributes": ["PublicationUnitID"]}},
+        {"attributes": ["ISBN"], "references": {"table": "Editions", "attributes": ["ISBN"]}}
+      ],
+      "functional_dependencies": [
+        "PublicationUnitID, ISBN -> PublicationUnitID, ISBN"
+      ]
+    },
+    "IssueArticle": {
+      "attributes": {
+        "PublicationUnitID": {"type": "INT", "nullable": false},
+        "IssueID": {"type": "INT", "nullable": false}
+      },
+      "primary_key": ["PublicationUnitID", "IssueID"],
+      "foreign_keys": [
+        {"attributes": ["PublicationUnitID"], "references": {"table": "Articles", "attributes": ["PublicationUnitID"]}},
+        {"attributes": ["IssueID"], "references": {"table": "Issues", "attributes": ["IssueID"]}}
+      ],
+      "functional_dependencies": [
+        "PublicationUnitID, IssueID -> PublicationUnitID, IssueID"
+      ]
+    },
+    "Distributors": {
+      "attributes": {
+        "DistID": {"type": "INT", "nullable": false},
+        "Name": {"type": "VARCHAR(100)", "nullable": false},
+        "Category": {"type": "VARCHAR(50)", "nullable": false},
+        "Phone": {"type": "VARCHAR(20)", "nullable": false},
+        "Representative": {"type": "VARCHAR(100)", "nullable": false},
+        "City": {"type": "VARCHAR(100)", "nullable": false},
+        "Street": {"type": "VARCHAR(200)", "nullable": false},
+        "Balance": {"type": "DECIMAL(10,2)", "nullable": false}
+      },
+      "primary_key": ["DistID"],
+      "candidate_keys": [["City", "Street"]],
+      "foreign_keys": [],
+      "functional_dependencies": [
+        "DistID -> Name, Category, Phone, Representative, City, Street, Balance",
+        "City, Street -> DistID, Name, Category, Phone, Representative, Balance"
+      ]
+    },
+    "Orders": {
+      "attributes": {
+        "OrderID": {"type": "INT", "nullable": false},
+        "NumCopy": {"type": "INT", "nullable": false},
+        "Price": {"type": "DECIMAL(10,2)", "nullable": false},
+        "ShippingCost": {"type": "DECIMAL(10,2)", "nullable": false},
+        "PlaceDate": {"type": "DATE", "nullable": false},
+        "IsPrinted": {"type": "BOOLEAN", "nullable": false},
+        "PlannedPrintDate": {"type": "DATE", "nullable": false},
+        "DeliveryDate": {"type": "DATE", "nullable": false},
+        "DistID": {"type": "INT", "nullable": false},
+        "ISBN": {"type": "VARCHAR(20)", "nullable": true, "null_meaning": "Order is for an issue rather than an edition"},
+        "IssueID": {"type": "INT", "nullable": true, "null_meaning": "Order is for an edition rather than an issue"}
+      },
+      "primary_key": ["OrderID"],
+      "foreign_keys": [
+        {"attributes": ["DistID"], "references": {"table": "Distributors", "attributes": ["DistID"]}},
+        {"attributes": ["ISBN"], "references": {"table": "Editions", "attributes": ["ISBN"]}},
+        {"attributes": ["IssueID"], "references": {"table": "Issues", "attributes": ["IssueID"]}}
+      ],
+      "constraints": ["Exactly one of ISBN or IssueID must be non-null (mutual exclusivity)"],
+      "functional_dependencies": [
+        "OrderID -> NumCopy, Price, ShippingCost, PlaceDate, IsPrinted, PlannedPrintDate, DeliveryDate, DistID, ISBN, IssueID"
+      ]
+    },
+    "Payments": {
+      "attributes": {
+        "PaymentID": {"type": "INT", "nullable": false},
+        "Amount": {"type": "DECIMAL(10,2)", "nullable": false},
+        "ClaimDate": {"type": "DATE", "nullable": true, "null_meaning": "Payment has not yet been claimed"}
+      },
+      "primary_key": ["PaymentID"],
+      "foreign_keys": [],
+      "functional_dependencies": [
+        "PaymentID -> Amount, ClaimDate"
+      ]
+    },
+    "EmployeePayments": {
+      "attributes": {
+        "PaymentID": {"type": "INT", "nullable": false},
+        "IssueDate": {"type": "DATE", "nullable": false},
+        "EmployeeID": {"type": "INT", "nullable": false},
+        "PublicationUnitID": {"type": "INT", "nullable": true, "null_meaning": "Payment is to a staff employee, not per-deliverable"}
+      },
+      "primary_key": ["PaymentID"],
+      "foreign_keys": [
+        {"attributes": ["PaymentID"], "references": {"table": "Payments", "attributes": ["PaymentID"]}},
+        {"attributes": ["EmployeeID"], "references": {"table": "Employees", "attributes": ["EmployeeID"]}},
+        {"attributes": ["PublicationUnitID"], "references": {"table": "PublicationUnits", "attributes": ["PublicationUnitID"]}}
+      ],
+      "functional_dependencies": [
+        "PaymentID -> IssueDate, EmployeeID, PublicationUnitID",
+        "PublicationUnitID -> PaymentID, IssueDate, EmployeeID"
+      ]
+    },
+    "DistPayments": {
+      "attributes": {
+        "PaymentID": {"type": "INT", "nullable": false},
+        "DistID": {"type": "INT", "nullable": false}
+      },
+      "primary_key": ["PaymentID"],
+      "foreign_keys": [
+        {"attributes": ["PaymentID"], "references": {"table": "Payments", "attributes": ["PaymentID"]}},
+        {"attributes": ["DistID"], "references": {"table": "Distributors", "attributes": ["DistID"]}}
+      ],
+      "functional_dependencies": [
+        "PaymentID -> DistID"
+      ]
+    }
+  }
+}
